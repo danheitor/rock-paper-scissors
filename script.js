@@ -1,20 +1,28 @@
 // Setting basic variables to later change
 
+const playerIcons = document.querySelectorAll(".playerOptions > div > img");
+const aiIcons = document.querySelectorAll(".aiOptions > div > img");
+const playerScoreText = document.getElementById("playerScore");
+const playerOptions = document.querySelector(".playerOptions");
+const bottomMenu = document.querySelector(".bottom-menu");
+const aiScoreText = document.getElementById("aiScore");
+const drawText = document.getElementById("draw");
+const gameLog = document.getElementById("log");
+let gameMode = "unlimited";
 let playerScore = 0;
 let aiScore = 0;
 let draw = 0;
-let gameMode = "unlimited";
 
 // Initialize game clicking in one of the 3 icons
 // call the function with the id of the icon as an argument
 // id from event target id property from mouse click event
-document.querySelector(".playerOptions").addEventListener("click", (e) => {
+playerOptions.addEventListener("click", (e) => {
   playRound(e.target.id);
 });
 
 // Game mode menu and reset buttons to default
 // call the function with the id of the of the selected option
-document.querySelector(".bottom-menu").addEventListener("click", (e) => {
+bottomMenu.addEventListener("click", (e) => {
   changeMode(e.target.id);
 });
 
@@ -31,11 +39,10 @@ function playRound(playerChoice) {
   // same icon id as the generated of the list
   // had to concatenate ai- plus aiChoice to math the ids from index page
   // used timeout so user sees the animation if computer picks the same choice in the next game
-  setTimeout(
-    () =>
-      document.getElementById(`${"ai-" + aiChoice}`).classList.add("aiChoice"),
-    50
-  );
+  setTimeout(() => {
+    document.getElementById(`${"ai-" + aiChoice}`).classList.add("aiChoice");
+    document.getElementById(playerChoice).classList.add("selected");
+  }, 50);
 
   // win and loss validation
   // player and computer score will be incremented each Win
@@ -47,10 +54,9 @@ function playRound(playerChoice) {
     (playerChoice === "scissors" && aiChoice === "paper")
   ) {
     playerScore += 1;
-    document.getElementById("playerScore").innerText = `Wins: ${playerScore}`;
-    document.getElementById(
-      "log"
-    ).innerText = `You win this round! ${playerChoice} beats ${aiChoice}`;
+    playerScoreText.innerText = `Wins: ${playerScore}`;
+    gameLog.innerText = `You win this round! ${playerChoice} beats ${aiChoice}`;
+    gameLog.classList.add("playerChoice");
   }
   if (
     (aiChoice === "rock" && playerChoice === "scissors") ||
@@ -58,15 +64,14 @@ function playRound(playerChoice) {
     (aiChoice === "scissors" && playerChoice === "paper")
   ) {
     aiScore += 1;
-    document.getElementById("aiScore").innerText = `Wins: ${aiScore}`;
-    document.getElementById(
-      "log"
-    ).innerText = `You lose this round! ${playerChoice} loses to ${aiChoice}`;
+    aiScoreText.innerText = `Wins: ${aiScore}`;
+    gameLog.innerText = `You lose this round! ${playerChoice} loses to ${aiChoice}`;
+    gameLog.classList.add("aiChoice");
   }
   if (playerChoice === aiChoice) {
     draw += 1;
-    document.getElementById("log").innerText = "It's a draw!";
-    document.getElementById("draw").innerText = `Draws ${draw}`;
+    gameLog.innerText = "It's a draw!";
+    drawText.innerText = `Draws ${draw}`;
   }
   // if gamemode is set to best of 5 this validation will be used.
   // after the validation is complete, it will pop an alert and reset the game.
@@ -80,7 +85,9 @@ function playRound(playerChoice) {
     }
     if (aiScore >= 5) {
       setTimeout(function () {
-        alert(`You lost!\nComputer somehow got 5 points first.\nMaybe he cheatin'`);
+        alert(
+          `You lost!\nComputer somehow got 5 points first.\nMaybe he cheatin'`
+        );
         reset();
       }, 50);
     }
@@ -93,14 +100,14 @@ function reset(msg) {
   playerScore = 0;
   aiScore = 0;
   draw = 0;
-  document.getElementById("playerScore").innerText = `Wins: 0`;
-  document.getElementById("aiScore").innerText = `Wins: 0`;
-  document.getElementById("draw").innerText = "Draws 0";
+  playerScoreText.innerText = `Wins: 0`;
+  aiScoreText.innerText = `Wins: 0`;
+  drawText.innerText = "Draws 0";
   msg !== undefined
-    ? (document.getElementById("log").innerText = `${msg}`)
-    : (document.getElementById("log").innerText = "All clean boss!");
+    ? (gameLog.innerText = `${msg}`)
+    : (gameLog.innerText = "All clean boss!");
 
-  setTimeout(() => (document.getElementById("log").innerText = ""), 1000);
+  setTimeout(() => (gameLog.innerText = ""), 1000);
   eraseClass();
 }
 
@@ -110,15 +117,17 @@ function reset(msg) {
 // aplying and removing the styles, also displaying the curren set game mode
 // last if is a validation so that the reset button won't keep the same style as the others options
 function changeMode(mode) {
+  let unlimited = document.getElementById("unlimited");
+  let bestOf5 = document.getElementById("bestOf5");
   if (mode === "bestOf5") {
-    document.getElementById("unlimited").classList.remove("selected");
-    document.getElementById("bestOf5").classList.add("selected");
+    unlimited.classList.remove("selected");
+    bestOf5.classList.add("selected");
     gameMode = "bestOf5";
     reset("Game mode change. Cleaning scoreboard!");
   }
   if (mode === "unlimited") {
-    document.getElementById("bestOf5").classList.remove("selected");
-    document.getElementById("unlimited").classList.add("selected");
+    bestOf5.classList.remove("selected");
+    unlimited.classList.add("selected");
     gameMode = "unlimited";
   }
   if (mode === "reset") reset();
@@ -126,7 +135,11 @@ function changeMode(mode) {
 
 // function that erasse all the classes from the computer icons
 function eraseClass() {
-  document.getElementById("ai-rock").removeAttribute("class");
-  document.getElementById("ai-paper").removeAttribute("class");
-  document.getElementById("ai-scissors").removeAttribute("class");
+  aiIcons.forEach((e) => {
+    e.classList.remove("aiChoice");
+  });
+  playerIcons.forEach((e) => {
+    e.classList.remove("selected");
+  });
+  gameLog.removeAttribute("class");
 }
