@@ -8,6 +8,7 @@ const bottomMenu = document.querySelector(".bottom-menu");
 const aiScoreText = document.getElementById("aiScore");
 const drawText = document.getElementById("draw");
 const gameLog = document.getElementById("log");
+const list = ["rock", "paper", "scissors"];
 let gameMode = "unlimited";
 let playerScore = 0;
 let aiScore = 0;
@@ -16,32 +17,30 @@ let draw = 0;
 // Initialize game clicking in one of the 3 icons
 // call the function with the id of the icon as an argument
 // id from event target id property from mouse click event
-playerOptions.addEventListener("click", (e) => {
-  playRound(e.target.id);
-});
+playerOptions.addEventListener("click", (e) => {playRound(e.target.id)});
 
 // Game mode menu and reset buttons to default
 // call the function with the id of the of the selected option
-bottomMenu.addEventListener("click", (e) => {
-  changeMode(e.target.id);
-});
+bottomMenu.addEventListener("click", (e) => {changeMode(e.target.id)});
+
+// pressing the key R will trigger a random pick for the player and play a round automatically
+window.addEventListener("keydown", (e) => { if (e.key == 'r') computerVscomputer()});
 
 //main function
 function playRound(playerChoice) {
   // randomize the list and give it to computer as a choice
-  const list = ["rock", "paper", "scissors"];
-  const aiChoice = list[Math.floor(Math.random() * list.length)];
+  let aiChoice = list[Math.floor(Math.random() * list.length)];
   // before displaying the random computer choise in the html
   // the function will erase all classes from the computer icons
   // displaying the default style before every play
   eraseClass();
-  // adding a class the computer icon
+  // adding a class for the player and computer icons
   // same icon id as the generated of the list
   // had to concatenate ai- plus aiChoice to math the ids from index page
   // used timeout so user sees the animation if computer picks the same choice in the next game
   setTimeout(() => {
     document.getElementById(`${"ai-" + aiChoice}`).classList.add("aiChoice");
-    document.getElementById(playerChoice).classList.add("selected");
+    document.getElementById(playerChoice).classList.add("playerChoice");
   }, 50);
 
   // win and loss validation
@@ -97,12 +96,12 @@ function playRound(playerChoice) {
 // function that reset the game
 // receives an argument so it will change the log message based in a button pressed
 function reset(msg) {
-  playerScore = 0;
-  aiScore = 0;
-  draw = 0;
   playerScoreText.innerText = `Wins: 0`;
   aiScoreText.innerText = `Wins: 0`;
   drawText.innerText = "Draws 0";
+  playerScore = 0;
+  aiScore = 0;
+  draw = 0;
   msg !== undefined
     ? (gameLog.innerText = `${msg}`)
     : (gameLog.innerText = "All clean boss!");
@@ -114,7 +113,7 @@ function reset(msg) {
 // game mod change function
 // by selecting the a button with the game mode described
 // will pass trough a validation erasing and add classes
-// aplying and removing the styles, also displaying the curren set game mode
+// aplying and removing the styles, also displaying the current set game mode
 // last if is a validation so that the reset button won't keep the same style as the others options
 function changeMode(mode) {
   let unlimited = document.getElementById("unlimited");
@@ -139,7 +138,12 @@ function eraseClass() {
     e.classList.remove("aiChoice");
   });
   playerIcons.forEach((e) => {
-    e.classList.remove("selected");
+    e.classList.remove("playerChoice");
   });
   gameLog.removeAttribute("class");
+}
+
+function computerVscomputer() {
+  let myAi = list[Math.floor(Math.random() * list.length)];
+  playRound(myAi);
 }

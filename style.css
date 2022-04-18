@@ -47,6 +47,10 @@ img {
 }
 
 .playerOptions img:hover {
+  transform: scale(1.3);
+}
+
+.playerOptions img:active {
   transform: scale(1.2);
 }
 
@@ -109,4 +113,11 @@ img.aiChoice, .aiChoice {
     brightness(107%) contrast(104%);
 
   transform: scale(1.3);
+}
+
+#random {
+  position: relative;
+  align-self: center;
+  top: -230px;
+  left: 0px;
 }
