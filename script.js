@@ -9,6 +9,10 @@ const aiScoreText = document.getElementById("aiScore");
 const drawText = document.getElementById("draw");
 const gameLog = document.getElementById("log");
 const list = ["rock", "paper", "scissors"];
+const overlayContainer = document.getElementById('overlay-container')
+const closePopUp = document.getElementById('close-pop-up')
+const popUpText = document.getElementById("pop-up-text")
+const popUp = document.getElementsByClassName('pop-up')
 let gameMode = "unlimited";
 let playerScore = 0;
 let aiScore = 0;
@@ -25,6 +29,12 @@ bottomMenu.addEventListener("click", (e) => {changeMode(e.target.id)});
 
 // pressing the key R will trigger a random pick for the player and play a round automatically
 window.addEventListener("keydown", (e) => { if (e.key == 'r') computerVscomputer()});
+
+// close the overlay by clicking anywhere including the button
+overlayContainer.addEventListener("click",() => {
+  reset(' ');
+  overlayContainer.classList.remove('show')
+})
 
 //main function
 function playRound(playerChoice) {
@@ -77,18 +87,15 @@ function playRound(playerChoice) {
   // timeout used so that the scoreboard result will be updated first before the alert, showing the correct values
   if (gameMode === "bestOf5") {
     if (playerScore >= 5) {
-      setTimeout(function () {
-        alert(`You are the winner!\nThe first who got 5 points!\nCongrats!!!`);
-        reset();
-      }, 50);
+      overlayContainer.classList.add('show')
+      popUpText.innerText ="You won!\nYou've got 5 points first!\n🎉 🎉 🎉"
+      setTimeout(function () {eraseClass()}, 50);
+      
     }
     if (aiScore >= 5) {
-      setTimeout(function () {
-        alert(
-          `You lost!\nComputer somehow got 5 points first.\nMaybe he cheatin'`
-        );
-        reset();
-      }, 50);
+      overlayContainer.classList.add('show')
+      popUpText.innerText ="You Lost!\nComputer got 5 points first!\n😅"
+      setTimeout(function () {eraseClass()}, 50);
     }
   }
 }
@@ -106,8 +113,8 @@ function reset(msg) {
     ? (gameLog.innerText = `${msg}`)
     : (gameLog.innerText = "All clean boss!");
 
-  setTimeout(() => (gameLog.innerText = ""), 1000);
-  eraseClass();
+    setTimeout(() => (gameLog.innerText = ""), 1000);
+    eraseClass();
 }
 
 // game mod change function
@@ -135,15 +142,18 @@ function changeMode(mode) {
 // function that erasse all the classes from the computer icons
 function eraseClass() {
   aiIcons.forEach((e) => {
-    e.classList.remove("aiChoice");
+    e.removeAttribute("class");
   });
   playerIcons.forEach((e) => {
-    e.classList.remove("playerChoice");
+    e.removeAttribute("class");
   });
   gameLog.removeAttribute("class");
 }
 
+// pressing R will call this fucntion, it will give a the player a random choice
+// to play against the computer
+// 'if' stops the function to be called if the overlay is showing
 function computerVscomputer() {
   let myAi = list[Math.floor(Math.random() * list.length)];
-  playRound(myAi);
+  if(!overlayContainer.classList.contains("show")) playRound(myAi)
 }
